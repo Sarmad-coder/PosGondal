@@ -1,0 +1,21 @@
+.loginMain {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #b2c4ff32;
+}
+
+.loginSecondary {
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.108);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border-radius: 0.5rem;
+    width: 350px;
+}
+
+@media screen and (max-width:400px) {
+    .loginSecondary {
+        width: 95%;
+    }
+}

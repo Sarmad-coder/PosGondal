@@ -1,0 +1,72 @@
+.sideBarPOS {
+    border: 1px solid rgba(0, 0, 0, 0.103);
+    border-radius: 1rem;
+}
+
+.cartPOSBox {
+    border: 1px solid rgba(0, 0, 0, 0.151);
+    padding: 1rem 0;
+    border-radius: 1rem;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.posAllCategory {
+    margin: 1rem 0.1rem;
+    border: 1px solid rgba(0, 0, 0, 0.068);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    box-shadow: rgba(100, 100, 111, 0.082) 0px 7px 29px 0px;
+}
+
+.posHeadingSideBar {
+    font-weight: 600;
+    font-size: 1.2rem;
+    background-color: rgba(0, 0, 0, 0.082);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    line-height: 2.8rem !important;
+    padding: 0 1rem;
+}
+
+.posContentSideBar {
+    cursor: pointer;
+    line-height: 2.4rem;
+    padding: 0 1rem;
+    text-transform: capitalize;
+}
+
+.posContentSideBar:hover {
+    background-color: rgba(0, 0, 0, 0.048);
+}
+
+.productBoxPOS {
+    padding: 0.1rem;
+    box-shadow: rgba(100, 100, 111, 0.199) 0px 7px 29px 0px;
+    border-radius: 0.4rem;
+    height: max-content;
+}
+
+.productTotalPOS {
+    background-color: rgb(127, 208, 255);
+    position: absolute;
+    margin-top: 1.5rem;
+    margin-left: -0.1rem;
+    padding: 0.3rem 0.5rem;
+    border-top-right-radius: 0.3rem;
+    border-bottom-right-radius: 0.3rem;
+    font-size: 0.8rem;
+    z-index: 1000;
+}
+
+.productImgPos:hover {
+    scale: 1.05;
+}
+
+.cartCross {
+    background-color: red !important;
+    border-radius: 2rem !important;
+    line-height: 0.4rem !important;
+    color: white;
+    font-size: 0.7rem;
+    margin-top: -15px;
+}

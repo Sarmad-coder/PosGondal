@@ -1,0 +1,36 @@
+.dashboadHeading{
+    font-size: 1.7rem;
+    font-weight: 500;
+    color: rgb(58, 57, 57) !important;
+    margin: 1rem;
+}
+.dashboardLine{
+    border: 1px solid rgba(0, 0, 0, 0.404);
+}
+.dashboardSectionBox{
+    border: 1px solid rgba(0, 0, 0, 0.103);
+    border-radius: 0.7rem !important;
+    box-shadow: rgba(0, 0, 0, 0.1) -4px 9px 25px -6px;
+    padding: 0.5rem;
+}
+.dashboardTxtHead{
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.76);
+}
+.dashboardTxt{
+    color: rgb(119, 112, 112);
+    font-size: 0.9rem;
+    text-decoration: none !important;
+}
+.dashBoardTableSales{
+    width: 100%;
+}
+.dashBoardTableSalesHead{
+    font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 2rem;
+}
+.dashBoardTableSalesTxt{
+    font-size: 0.9rem;
+}
