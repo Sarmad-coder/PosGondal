@@ -10,6 +10,7 @@ import { Button, Modal } from 'antd';
 import ViewPayment from './ViewPayment';
 import DateComp from '../../../../components/Date';
 
+
 const Purchase = () => {
     // const navigate = useNavigate()
     const [viewPaymentModal, setViewPaymentModal] = useState(false);
@@ -20,6 +21,7 @@ const Purchase = () => {
     const [allWarehouse, setAllWarehouse] = useState([])
     const [allPayment, setAllPayment] = useState([])
     const [dateFilterRes, setDateFilterRes] = useState(null)
+    const move=useNavigate()
     useEffect(() => {
         // axios.get(`${URL}/purchasedetail/get`).then((res) => {
         //     setAllProduct(res?.data?.data)
@@ -40,8 +42,9 @@ const Purchase = () => {
     //     setCreatePaymentModal(true)
     // }
     const fn_viewPayment = (item) => {
-        setSinglePurchase(item)
-        setViewPaymentModal(true)
+        // setSinglePurchase(item)
+        // setViewPaymentModal(true)
+        move("/createpurchase/"+item._id)
     }
     return (
         <div className="content-section p-3 pt-0">

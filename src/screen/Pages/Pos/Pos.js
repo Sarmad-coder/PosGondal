@@ -27,7 +27,7 @@ const Pos = () => {
   const [allBrand, setAllBrand] = useState([])
   const [shipCost, setShipCost] = useState(0)
   const [discount, setDiscount] = useState(0)
-  const [editProduct, setEditProduct] = useState({})
+  const [editProduct, setEditProduct] = useState([])
   let [loading, setLoading] = useState(false)
   const { invoiceData, setInvoiceData } = useContext(MyContext);
   const editId = useParams().id
@@ -38,6 +38,8 @@ const Pos = () => {
     });
     axios.get(`${URL}/warehouse`).then((res) => {
       setAllWarehouse(res.data?.data);
+      console.log(res.data?.data)
+
     });
 
     axios
@@ -80,6 +82,9 @@ const Pos = () => {
       });
   }, [selectedWarehouse]);
 
+
+
+
   // const fn_addToCart = (item) => {
   //   setCartProduct((prevCart) => [...prevCart, { ...item, cartQty: 1 }]);
   //   setItemAdded(true);
@@ -89,6 +94,7 @@ const Pos = () => {
     if (item?.cartQty === 1) {
       return;
     }
+    console.log(editProduct)
     const allProduct = [...cartProduct];
     const findItem = allProduct?.find((i) => i?._id === item?._id);
     findItem.cartQty -= 1;
@@ -96,28 +102,47 @@ const Pos = () => {
     allProduct[index] = findItem;
     setCartProduct(allProduct);
   };
-  const handleIncrement = (item) => {
+  const handleIncrement = async (item) => {
     if (item?.cartQty === item?.whQty) {
       return;
     }
+
+
+    let warehouseQty = 0; // Initialize warehouseQty
+
+    let warehouse = allWarehouse.find((warehouseItem) => {
+      return warehouseItem._id == selectedWarehouse
+    })
+
+    const product = warehouse.productIds.find((product) => product.proId === item._id);
+    if (product) {
+
+      warehouseQty = product.qty;
+    }
+
+
+
     if (editId) {
       const allProduct1 = [...cartProduct];
-      const findItem = allProduct1?.find((i) => i?._id === item?._id);
-      const actualItem = allProduct?.find((i) => i?._id === item?._id)
-      const editItem = editProduct.productDetail.find((i) => i?._id === item?._id)
-      findItem.quantity = actualItem.quantity;
-      if (findItem.cartQty < actualItem.quantity) {
+      const findItem = allProduct1.find((i) => i._id === item._id);
+
+
+      let resp = await axios.get(`${URL}/customerorder/${editId}`)
+      const editItem = resp?.data?.data?.productDetail.find((i) => i._id === item._id);
+
+      // Check if the cartQty doesn't exceed the available quantity
+      if (findItem.cartQty < warehouseQty + (editItem?.cartQty || 0)) {
         findItem.cartQty += 1;
-        const index = allProduct1?.findIndex((i) => i?._id === item?._id);
+        const index = allProduct1.findIndex((i) => i._id === item._id);
         allProduct1[index] = findItem;
         setCartProduct(allProduct1);
       } else {
-        toast.error("This product quantity cannot be greater than stock available")
+        toast.error("This product quantity cannot be greater than stock available");
       }
     } else {
       const allProduct = [...cartProduct];
       const findItem = allProduct?.find((i) => i?._id === item?._id);
-      if (findItem.cartQty < findItem.quantity) {
+      if (findItem.cartQty < warehouseQty) {
         findItem.cartQty += 1;
         const index = allProduct?.findIndex((i) => i?._id === item?._id);
         allProduct[index] = findItem;
@@ -138,7 +163,21 @@ const Pos = () => {
   const fn_addToCart = (item) => {
     // Check if the product is already in the cart
     const productInCart = cartProduct.find((cartItem) => cartItem._id === item._id);
-    const findItem = allProduct?.find((i) => i?._id === item?._id);
+
+
+    let warehouseQty = 0; // Initialize warehouseQty
+
+    let warehouse = allWarehouse.find((warehouseItem) => {
+      return warehouseItem._id == selectedWarehouse
+    })
+
+    const product = warehouse.productIds.find((product) => product.proId === item._id);
+    if (product) {
+
+      warehouseQty = product.qty;
+    }
+
+
     if (productInCart) {
       const updatedCartProduct = cartProduct.map((cartItem) => {
         if (cartItem._id === item._id) {
@@ -146,7 +185,7 @@ const Pos = () => {
         }
         return cartItem;
       });
-      if (updatedCartProduct[0].cartQty <= findItem.quantity) {
+      if (updatedCartProduct[0].cartQty <= warehouseQty) {
 
         setCartProduct(updatedCartProduct);
       } else {
@@ -154,7 +193,7 @@ const Pos = () => {
       }
     } else {
       // If the product is not in the cart, add it with an order quantity of 1
-      if (findItem.quantity > 0) {
+      if (warehouseQty > 0) {
         setCartProduct((prevCart) => [...prevCart, { ...item, cartQty: 1 }]);
       } else {
         toast.error("This product quantity is 0 in the Stock")
@@ -183,7 +222,7 @@ const Pos = () => {
     } else {
       shippingCost = parseInt(document.getElementById("cartShippingAmount").value); // Get shipping cost
       grandTotal = cartProduct?.reduce((acc, i) => {
-        return i?.cartQty * i?.productPrice + acc;
+        return Math.round(i?.cartQty * i?.productPrice + acc);
       }, 0) + shippingCost - discount; // Calculate grand total with shipping cost
 
       const params = {
@@ -202,31 +241,31 @@ const Pos = () => {
         axios.patch(`${URL}/customerorder/previousOrder/${editProduct._id}`, params).then((res) => {
           if (res?.data?.status === 200) {
             invoiceData.invoiceNo = res.data?.data.invoiceNo
-  
-  
-  
+
+
+
             const currentCustomer = allCustomer.find((item) => {
               return item._id == selectedCustomer
             })
-  
+
             const products = []
-  
-  
-  
+
+
+
             cartProduct.forEach((product, index) => {
               let data = {}
-  
+
               data = {
                 "name": product.productName,
                 "quantity": product.cartQty,
                 "price": product.productPrice,
                 "totalPrice": product.productPrice * product.cartQty
-  
+
               }
-  
-  
-  
-  
+
+
+
+
               products.push({ ...data })
             })
             invoiceData.customer = currentCustomer
@@ -234,11 +273,12 @@ const Pos = () => {
             invoiceData.shippingCost = shippingCost
             invoiceData.discount = discount
             invoiceData.grandTotal = grandTotal
-  
+
             setInvoiceData({ ...invoiceData })
             navigate("/invoice")
           } else {
             toast.error(res?.data?.message);
+            setLoading(false)
             return
           }
         });
@@ -246,31 +286,31 @@ const Pos = () => {
         axios.post(`${URL}/customerorder`, params).then((res) => {
           if (res?.data?.status === 200) {
             invoiceData.invoiceNo = res.data?.data.invoiceNo
-  
-  
-  
+
+
+
             const currentCustomer = allCustomer.find((item) => {
               return item._id == selectedCustomer
             })
-  
+
             const products = []
-  
-  
-  
+
+
+
             cartProduct.forEach((product, index) => {
               let data = {}
-  
+
               data = {
                 "name": product.productName,
                 "quantity": product.cartQty,
                 "price": product.productPrice,
                 "totalPrice": product.productPrice * product.cartQty
-  
+
               }
-  
-  
-  
-  
+
+
+
+
               products.push({ ...data })
             })
             invoiceData.customer = currentCustomer
@@ -278,16 +318,17 @@ const Pos = () => {
             invoiceData.shippingCost = shippingCost
             invoiceData.discount = discount
             invoiceData.grandTotal = grandTotal
-  
+
             setInvoiceData({ ...invoiceData })
             navigate("/invoice")
           } else {
             toast.error(res?.data?.message);
+            setLoading(false)
             return
           }
         });
       }
-      
+
     }
 
 
@@ -387,13 +428,13 @@ const Pos = () => {
                         </span>
                       </div>
                       <div className="text-end">
-                        <button
+                        {!editId && <button
                           className="cartCross btn btn-sm btn-info me-1 mb-1"
                           style={{ lineHeight: "0.8rem" }}
                           onClick={() => fn_deleteToCart(item?._id)}
                         >
                           x
-                        </button>
+                        </button>}
                         <br />
                         <button
                           className="btn btn-sm btn-info me-1"
@@ -402,7 +443,64 @@ const Pos = () => {
                         >
                           -
                         </button>
-                        <span>{item?.cartQty}</span>
+                        <input type="text" className=" w-25 " value={item?.cartQty} onChange={async (e) => {
+                          if (e.target.value > item?.cartQty) {
+
+                            let warehouseQty = 0; // Initialize warehouseQty
+
+                            let warehouse = allWarehouse.find((warehouseItem) => {
+                              return warehouseItem._id == selectedWarehouse
+                            })
+
+                            const product = warehouse.productIds.find((product) => product.proId === item._id);
+                            if (product) {
+
+                              warehouseQty = product.qty;
+                            }
+
+
+
+                            if (editId) {
+                              const allProduct1 = [...cartProduct];
+                              const findItem = allProduct1.find((i) => i._id === item._id);
+
+
+                              let resp = await axios.get(`${URL}/customerorder/${editId}`)
+                              const editItem = resp?.data?.data?.productDetail.find((i) => i._id === item._id);
+
+                              // Check if the cartQty doesn't exceed the available quantity
+                              if (e.target.value <= warehouseQty + (editItem?.cartQty || 0)) {
+                                findItem.cartQty = e.target.value;
+                                const index = allProduct1.findIndex((i) => i._id === item._id);
+                                allProduct1[index] = findItem;
+                                setCartProduct(allProduct1);
+                              } else {
+                                toast.error("This product quantity cannot be greater than stock available");
+                              }
+                            } else {
+                              const allProduct = [...cartProduct];
+                              const findItem = allProduct?.find((i) => i?._id === item?._id);
+                              if (e.target.value <= warehouseQty) {
+                                findItem.cartQty = e.target.value;
+                                const index = allProduct?.findIndex((i) => i?._id === item?._id);
+                                allProduct[index] = findItem;
+                                setCartProduct(allProduct);
+                              } else {
+                                toast.error("This product quantity cannot be greater than stock available")
+                              }
+                            }
+                          } else {
+
+                            console.log(editProduct)
+                            const allProduct = [...cartProduct];
+                            const findItem = allProduct?.find((i) => i?._id === item?._id);
+                            findItem.cartQty = e.target.value;
+                            const index = allProduct?.findIndex((i) => i?._id === item?._id);
+                            allProduct[index] = findItem;
+                            setCartProduct(allProduct);
+                          }
+                        }} />
+                        {/* <span>{item?.cartQty}</span> */}
                         <button
                           className="btn btn-sm btn-info ms-1"
                           style={{ lineHeight: "1rem" }}
@@ -462,7 +560,7 @@ const Pos = () => {
               <label className="productCreateTxt fw-semibold fs-5 text-dark">
                 PKR
                 {cartProduct?.reduce((acc, i) => {
-                  return i?.cartQty * i?.productPrice + acc;
+                  return Math.round(i?.cartQty * i?.productPrice + acc) ;
                 }, 0) + (parseInt(shipCost) || 0) - (parseInt(discount) || 0)}
               </label>
             </div>
@@ -501,7 +599,7 @@ const Pos = () => {
           </div>
         </div>
         {/* POS Mid Content */}
-        {!editId ? <div className="col-md-5 row">
+        <div className="col-md-5 row">
           {(filterByGroup ?? filterPro ?? allProduct) &&
             (selectedWarehouse
               ? (filterByGroup ?? filterPro ?? allProduct)?.filter(item => item.warehouse.includes(selectedWarehouse))
@@ -538,10 +636,10 @@ const Pos = () => {
                 </div>
               ))}
           {/* {(!filterByGroup?.length && filterPro?.length) && <h4>No Product Exist</h4>} */}
-        </div> : null}
+        </div>
 
         {/* POS Right SideBar */}
-        {!editId ? <div className="col-md-3 sideBarPOS">
+        <div className="col-md-3 sideBarPOS">
           <div className="posAllCategory">
             <div className="posHeadingSideBar">Category</div>
             <div className="posContentSideBar" onClick={() => handleFilterData('all')}>All</div>
@@ -567,7 +665,7 @@ const Pos = () => {
 
             )}
           </div>
-        </div> : null}
+        </div>
       </div>
     </div>
   );

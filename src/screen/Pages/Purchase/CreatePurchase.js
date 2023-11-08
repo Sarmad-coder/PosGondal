@@ -9,10 +9,11 @@ import axios from "axios";
 import URL, { imgURL } from "../../Url";
 import { Oval } from 'react-loader-spinner';
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 
 
 const CreatePurchase = () => {
+    const editId = useParams().purchaseId
     const Navigate = useNavigate()
     const [proloader, setProLoader] = useState(false)
     const [allSupplier, setAllSupplier] = useState([])
@@ -24,6 +25,8 @@ const CreatePurchase = () => {
     const [allData, setAllData] = useState([]);
     const [query, setQuery] = useState("")
     const [checkboxes, setCheckboxes] = useState(Array(allData.length).fill(false));
+
+    const [editPurchase, setEditPurchase] = useState({})
     const purchaseProduct = (e, index, item) => {
         if (e.target.checked) {
             setAllData((prevProArr) => [
@@ -58,7 +61,13 @@ const CreatePurchase = () => {
         axios.get(`${URL}/product`).then((res) => {
             const productsArr = res?.data?.data.map(item => ({ ...item, total: 0 }))
             setProd(productsArr)
-
+            if (editId) {
+                axios.get(`${URL}/purchasedetail/get/${editId}`).then((res) => {
+                    console.log(res)
+                    setEditPurchase(res.data?.data)
+        
+                })
+            }
         })
     }, [])
     const searchProduct = (e) => {
@@ -124,52 +133,97 @@ const CreatePurchase = () => {
 
     return (
         <div>
-            <p className='dashboadHeading' >Add Purchase</p >
+            <p className='dashboadHeading' >{editId?"View Purchase":"Add Purchase"}</p >
             <hr className='dashboardLine' />
             <div className="productMainBox">
                 <div className="row">
                     <div className="col-md-6 d-flex flex-column px-3 mb-3">
                         <label className="productCreateTxt">Supplier*</label>
-                        <select className="productCreateInput" id="supplierId" onChange={(e) => searchProduct(e)}>
+                        {!editId?<select className="productCreateInput" id="supplierId" onChange={(e) => searchProduct(e)}>
                             <option selected value={""}>---Choose Supplier---</option>
                             {allSupplier && allSupplier?.map((item) => (
                                 <option value={item?._id}>{item?.name}</option>
                             ))}
-                        </select>
+                        </select>:
+                        <select className="productCreateInput" disabled value={editPurchase.supplier?._id} id="supplierId" onChange={(e) => searchProduct(e)}>
+                        <option selected value={""}>---Choose Supplier---</option>
+                        {allSupplier && allSupplier?.map((item) => (
+                            <option value={item?._id}>{item?.name}</option>
+                        ))}
+                    </select>
+                        }
                     </div>
                     <div className="col-md-6 d-flex flex-column px-3 mb-3">
                         <label className="productCreateTxt">Warehouse*</label>
-                        <select className="productCreateInput" id="warehouseId" onChange={(e) => searchProduct(e)}>
+                        {!editId?<select className="productCreateInput" id="warehouseId" onChange={(e) => searchProduct(e)}>
                             <option selected value={""}>---Choose Warehouse---</option>
                             {allWarehouse && allWarehouse?.map((item) => (
                                 <option value={item?._id}>{item?.name}</option>
                             ))}
-                        </select>
+                        </select>:
+                       <select className="productCreateInput" disabled value={editPurchase.warehouse} id="warehouseId" onChange={(e) => searchProduct(e)}>
+                       <option selected value={""}>---Choose Warehouse---</option>
+                       {allWarehouse && allWarehouse?.map((item) => (
+                           <option value={item?._id}>{item?.name}</option>
+                       ))}
+                   </select> }
                     </div>
                 </div>
             </div>
             <div className="productMainBox">
-                <div className="d-flex flex-column px-3 mb-3">
+                {!editId&&<div className="d-flex flex-column px-3 mb-3">
                     <label className="productCreateTxt mb-1">Products</label>
                     <Space.Compact size="large" style={{ backgroundColor: "rgba(40, 129, 201, 0.055)" }}>
                         <Input addonBefore={<SearchOutlined />} placeholder="Search Product" value={query} onChange={(e) => { setQuery(e?.target?.value) }} />
                     </Space.Compact>
-                </div>
+                </div>}
                 <div className="table-responsive-md mt-5 mx-3">
                     <table className="table">
                         <thead>
                             <tr className="table-primary">
-                                <td scope="col" className="productCreateTxt fw-semibold">#</td>
+                                {!editId?<td scope="col" className="productCreateTxt fw-semibold">#</td>:null}
                                 <td scope="col" className="productCreateTxt fw-semibold">Image</td>
                                 <td scope="col" className="productCreateTxt fw-semibold">Product Name</td>
                                 <td scope="col" className="productCreateTxt fw-semibold">Purchase Price</td>
                                 <td scope="col" className="productCreateTxt fw-semibold">Sale Price</td>
-                                <td scope="col" className="productCreateTxt fw-semibold">Available Stock</td>
+                                {!editId?<td scope="col" className="productCreateTxt fw-semibold">Available Stock</td>:null}
                                 <td scope="col" className="productCreateTxt fw-semibold">Purchase Quantity</td>
                                 <td scope="col" className="productCreateTxt fw-semibold">Grand Total</td>
                                 {/* <td scope="col" className="productCreateTxt fw-semibold">Action</td> */}
                             </tr>
                         </thead>
+                        {editId?<tbody>
+                            
+                                <tr >
+                                    
+                                    <td><img src={`${imgURL}/${editPurchase.imageUrl}`} alt="missing img" style={{ "borderRadius": "0.5rem", "height": "4em", "width": "4em" }} ></img></td>
+                                    <td>{editPurchase.productName}</td>
+                                    <td>PKR {editPurchase.productCost}</td>
+                                    <td>PKR {editPurchase.productPrice}</td>
+                                   
+                                    <td style={{ width: "150px" }}>
+                                        <input
+                                            type="number"
+                                            id="qty"
+                                            disabled={true}
+                                            value={editPurchase.quantity}
+                                            className="productCreateInput"
+                                            style={{ width: "100px" }}
+                                        />
+                                    </td>
+                                    <td style={{ width: "120px" }}>
+                                        <input
+                                             disabled={true}
+                                            value={editPurchase?.total}
+                                            className="productCreateInput"
+                                            style={{ width: "100px" }}
+                                        />
+                                    </td>
+
+
+                                </tr>
+                            
+                        </tbody>:
                         <tbody>
                             {searchQD && searchQD.map((p, i) => (
                                 <tr key={i}>
@@ -211,7 +265,7 @@ const CreatePurchase = () => {
 
                                 </tr>
                             ))}
-                        </tbody>
+                        </tbody>}
                         {proloader === true && (
                             <Oval
                                 height={33}
@@ -249,9 +303,9 @@ const CreatePurchase = () => {
                     </table>
                 </div>
             </div>
-            <button className="btn btn-info btn-md ms-4" style={{ width: "120px" }} onClick={fn_submit} >
+            {!editId&&<button className="btn btn-info btn-md ms-4" style={{ width: "120px" }} onClick={fn_submit} >
                 <AiOutlineCheckCircle className="submitProductIcon text-dark" />Submit
-            </button>
+            </button>}
             <br /><br />
         </div>
     )

@@ -1,8 +1,9 @@
 import axios from "axios"
 import React from "react"
-
+import { useParams } from "react-router-dom"
 
 const CreatePayment = ({ Modal, Button, createPaymentModal, setCreatePaymentModal, URL, toast, singlePurchase, allPayment, setAllProduct }) => {
+    
     const fn_submit = () => {
         if (
             document.getElementById("paymentdate").value === "" ||

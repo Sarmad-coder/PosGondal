@@ -146,6 +146,7 @@ function App() {
               <Route path="/profitandloss" element={(isAdmin || allRoles?.report?.profitLoss) ? <ProftAndLoss /> : <Navigate to="/dashboard" replace />} />
               <Route path="/salereport" element={(isAdmin || allRoles?.report?.saleReport) ? <SaleReport /> : <Navigate to="/dashboard" replace />} />
               <Route path="/purchasereport" element={(isAdmin || allRoles?.report?.purchaseReport) ? <PurchaseReport /> : <Navigate to="/dashboard" replace />} />
+              <Route path="/createpurchase/:purchaseId" element={(isAdmin || allRoles?.purchase?.addPurchase) ? <CreatePurchase /> : <Navigate to="/dashboard" replace />} />
               {/* <Route path="/inventoryreport" element={(isAdmin || allRoles?.report) ? <InventoryReport /> : <Navigate to="/dashboard" replace />} /> */}
               {/* <Route path="/productreport" element={(isAdmin || allRoles?.report) ? <ProductReport /> : <Navigate to="/dashboard" replace />} /> */}
               {/* <Route path="/customerreport" element={(isAdmin || allRoles?.report) ? <CustomerReport /> : <Navigate to="/dashboard" replace />} /> */}

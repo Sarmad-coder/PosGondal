@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { BsFillPencilFill } from "react-icons/bs";
 import { MyContext } from "../../../components/context";
 import { useNavigate } from "react-router-dom";
+import { FiDelete } from "react-icons/fi";
 const SaleReport = () => {
     const navigate = useNavigate();
     const [allOrders, setAllOrders] = useState([])
@@ -33,7 +34,7 @@ const SaleReport = () => {
     const fn_viewPayment = (item) => {
 
 
-        
+
 
         var products = []
         item.productDetail.forEach((product, index) => {
@@ -60,7 +61,7 @@ const SaleReport = () => {
         invoiceData.invoiceNo = item.invoiceNo
 
         setInvoiceData({ ...invoiceData })
-        
+
         navigate("/invoice")
 
 
@@ -68,21 +69,40 @@ const SaleReport = () => {
     }
 
 
-    const fn_updateSale = () => {
-        // axios.patch(`${URL}/customerorder/previousOrder/${previousOrder._id}`, updateSale).then((res) => {
-        //     toast.success("Sale has been Updated")
-        //     setPreviousOrder({ ...previousOrder, invoiceNo: updateSale.invoiceNo, grandTotal: updateSale.grandTotal })
-        //     setEditModal(false)
-        //     setViewPaymentModal(false)
-        //     axios.get(`${URL}/customerorder`).then((res) => {
-        //         setAllOrders(res?.data?.data)
-        //     })
-        // })
-    }
+
     const fn_editSale = (id) => {
-        
+
         navigate(`/pos/${id}`)
     }
+
+    const onDeleteStudent = async (id) => {
+
+        Modal.confirm({
+            title: "are you sure you want to delete?",
+            onOk: () => {
+
+
+
+                axios
+                    .delete(
+                        `${URL}/customerorder/` + id
+                    )
+                    .then((res) => {
+                        axios.get(`${URL}/customerorder`).then((res) => {
+                            setAllOrders(res?.data?.data)
+                        })
+
+                        toast.success('Category is deleted')
+                    }).catch((error) => {
+                        console.error(error)
+                    });
+
+            },
+        });
+
+
+
+    };
 
 
 
@@ -99,6 +119,17 @@ const SaleReport = () => {
                 setDateFilterRes={setDateFilterRes}
 
             />
+
+            <input type="search" placeholder='Search by ref#' className=' m-3 p-1 w-25' onChange={(e) => {
+                const params = {
+                    search: e.target.value
+                }
+
+                axios.post(`${URL}/customerorder/previousOrder/search`, params).then((res) => {
+                    setAllOrders(res?.data?.data)
+                })
+
+            }} />
             <div id="section_Warehouse_list" className="row">
                 <div className="col-md-12">
                     <div className="card">
@@ -148,7 +179,20 @@ const SaleReport = () => {
                                                         <span style={{ cursor: "pointer", marginRight: "1rem" }}
                                                             onClick={() => fn_viewPayment(item)}>
                                                             <FiEye /></span>
-                                                        {admin?<i className='text-success' style={{ cursor: "pointer" }} onClick={() => { fn_editSale(item._id)}}><BsFillPencilFill /></i>:null}
+                                                        {admin ? <i className='text-success' style={{ cursor: "pointer" }} onClick={() => { fn_editSale(item._id) }}><BsFillPencilFill /></i> : null}
+
+                                                        &nbsp;
+                                                        &nbsp;
+                                                        {admin && <FiDelete
+                                                            className="text-danger"
+                                                            style={{ cursor: "pointer" }}
+                                                            onClick={() => {
+
+                                                                onDeleteStudent(item._id);
+
+                                                            }}
+                                                        />}
+
 
 
 
@@ -161,6 +205,12 @@ const SaleReport = () => {
                                 <h5 style={{ textAlign: "end", paddingRight: "1rem" }}><span style={{ color: "red", marginRight: "0.6rem" }}>Total Sale:</span>{(dateFilterRes ?? allOrders)?.reduce((acc, item) => {
                                     return acc + item?.grandTotal
                                 }, 0)} Rs</h5>
+
+                                <h5 style={{ textAlign: "end", paddingRight: "1rem" }}><span style={{ color: "red", marginRight: "0.6rem" }}>Total Shipping:</span>{(dateFilterRes ?? allOrders)?.reduce((acc, item) => {
+                                    return acc + item?.shipping
+                                }, 0)} Rs</h5>
+
+                              
                             </div>
                         </div>
                     </div>

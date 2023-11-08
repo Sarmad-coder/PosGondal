@@ -20,14 +20,19 @@ const Category = () => {
     const [groupDetail, setGroupDetail] = useState({});
     const [query, setQuery] = useState("");
 
-    const [data, setDate] = useState([]);
+    let [data, setDate] = useState([]);
+
     const getData = useMemo(() => data?.filter((d) => (
         d?.grpName?.toLowerCase().includes(query?.toLowerCase())
     )), [query, data]);
+
     useEffect(() => {
         axios.get(`${URL}/group`)
             .then((res) => {
-                setDate(res?.data?.data?.reverse())
+                if (res.data.data) {
+                    
+                    setDate(res?.data?.data?.reverse())
+                }
             })
             .catch(
                 (error) => {
@@ -60,7 +65,7 @@ const Category = () => {
     };
     return (
         <div className="content-section p-3 pt-0">
-            <CreateCategory key="model1" modalOpen={modal1Open} setModalOpen={setModal1Open} setDate={setDate} URL={URL} />
+            <CreateCategory key="model1" modalOpen={modal1Open} setModalOpen={setModal1Open} setDate={setDate} data={data} URL={URL} />
             <UpdateCategory key="model2" modalUpdate={modalUpdate} setModalUpdate={setModalUpdate} setDate={setDate} groupDetail={groupDetail} setGroupDetail={setGroupDetail} />
             <UpdateProduct key="model3" modalOpen={updateProductModal} setModalOpen={setUpdateProductModal} URL={URL} toast={toast} />
             <p className='dashboadHeading' >Groups</p>
@@ -108,6 +113,7 @@ const Category = () => {
                                         <tr >
                                             <th className="sorting" tabIndex="0" aria-controls="warehouse_table" rowspan="1" colspan="1" style={{ width: "105px" }} aria-label="Zip Code: activate to sort column ascending"> Code</th>
                                             <th className="sorting" tabIndex="0" aria-controls="warehouse_table" rowspan="1" colspan="1" style={{ width: "105px" }} aria-label="Name: activate to sort column ascending">Name</th>
+                                            <th className="sorting" tabIndex="0" aria-controls="warehouse_table" rowspan="1" colspan="1" style={{ width: "105px" }} aria-label="Name: activate to sort column ascending">type</th>
                                             <th className="not_show sorting_disabled" rowspan="1" colspan="1" style={{ width: "105px" }} aria-label="Action">Action</th>
                                         </tr>
                                     </thead>
@@ -117,6 +123,7 @@ const Category = () => {
                                                 <tr className="odd" key={item._id}>
                                                     <td>{item.grpCode}</td>
                                                     <td>{item.grpName}</td>
+                                                    <td>{item.grpType}</td>
                                                     <td>
                                                         <a id="1" className="text-success" title="Edit" style={{ cursor: "pointer" }}>
                                                             <BsFillPencilFill onClick={() => {
