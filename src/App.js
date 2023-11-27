@@ -71,6 +71,22 @@ function App() {
   const [allRoles, setAllRoles] = useState({})
   const isAdmin = allRoles?.role?.toLowerCase() === 'admin'
   const [invoiceData, setInvoiceData] = useState({});
+  const currentDate = new Date();
+            const monthAbbreviation = [
+                'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December',
+            ];
+  localStorage.setItem("dateSet", currentDate?.getDate() + "-" + monthAbbreviation[currentDate?.getMonth()] + "-" + currentDate?.getFullYear())
 
   return (
     <>

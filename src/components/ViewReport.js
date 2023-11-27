@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import URL from '../screen/Url'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-
+import moment from 'moment'
 const ViewReport = ({ modalOpen, setModalOpen, Modal, Button }) => {
     const [totalSale, setTotalSale] = useState(0)
     const [totalPurchase, setTotalPurchase] = useState(0)
@@ -16,7 +16,11 @@ const ViewReport = ({ modalOpen, setModalOpen, Modal, Button }) => {
             }, 0))
         })
         axios.get(`${URL}/purchasedetail/get`).then((res) => {
-            const dateFilter = res?.data?.data?.filter(i => i?.setDate === localStorage.getItem("dateSet"))
+            const dateString = localStorage.getItem("dateSet");
+            const date = moment.utc(dateString, "DD-MMMM-YYYY")
+            const dateFilter = res?.data?.data?.filter(i => {
+               return new Date(i?.createdAt).toISOString().slice(0, 10)  ===date.format("YYYY-MM-DD")
+            })
             setTotalPurchase(dateFilter?.reduce((acc, i) => {
                 return (i?.productPrice * i?.quantity) + acc
             }, 0))
@@ -36,8 +40,8 @@ const ViewReport = ({ modalOpen, setModalOpen, Modal, Button }) => {
     })
     const fn_Submit = () => {
         window.print()
-        localStorage.removeItem("dateSet")
-        toast.success("Day Closed")
+        // localStorage.removeItem("dateSet")
+        // toast.success("Day Closed")
         setTimeout(() => {
             window.location.reload()
         }, 1500)

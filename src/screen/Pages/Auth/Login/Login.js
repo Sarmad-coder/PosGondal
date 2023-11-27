@@ -54,9 +54,9 @@ const Login = ({ setAllRoles }) => {
                         ...res?.data?.data?.permissionsId?.allObject,
                         role: res?.data?.data?.role
                     })
-                    if (!localStorage.getItem("dateSet")) {
+                   
                         localStorage.setItem("dateSet", currentDate?.getDate() + "-" + monthAbbreviation[currentDate?.getMonth()] + "-" + currentDate?.getFullYear())
-                    }
+                    
                     // window.location.reload()
                 } else {
                     return toast.error(res?.data?.message)

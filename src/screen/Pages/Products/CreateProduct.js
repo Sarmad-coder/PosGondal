@@ -93,7 +93,7 @@ const CreateProduct = () => {
                     }
                 })
             }
-        }else{
+        } else {
             axios.post(`${URL}/product`, params).then((res) => {
                 if (res?.data?.status === 200) {
                     toast.success("Product Added")
@@ -190,7 +190,17 @@ const CreateProduct = () => {
 
                             <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
                                 <label className="productCreateTxt">Product Price by percent*</label>
-                                <input type="number" className="productCreateInput" placeholder="Product Price By %" name="productPriceByPercent" required />
+                                <input type="number" className="productCreateInput" placeholder="Product Price By %" name="productPriceByPercent" required onChange={()=>{
+                                     let value = +document.getElementsByName("productPriceByPercent")?.[0].value
+                                     let cost = +document.getElementsByName("productCost")?.[0].value
+                                     let totalPrice = (cost / 100) * value
+                                     totalPrice = +totalPrice + +cost
+                                    document.getElementById("showPrice").value = totalPrice
+                                }}/>
+                            </div>}
+                           {productType == "percent"&& <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
+                                <label className="productCreateTxt">Product Price*</label>
+                                <input id="showPrice" disabled type="number" className="productCreateInput" placeholder="Product Price" name="productPriceByPercent" required />
                             </div>}
                         <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
                             <label className="productCreateTxt">Product Unit</label>

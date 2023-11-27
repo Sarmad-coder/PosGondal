@@ -29,27 +29,31 @@ function Nav({ press, allRoles }) {
   }, []);
 
   const fn_closeDay = () => {
-    showDeleteConfirm()
+    if (!localStorage.getItem("dateSet")) {
+      toast.error("Day Already Closed")
+    } else {
+      setModalOpen(true)
+    }
   }
-  const showDeleteConfirm = () => {
-    confirm({
-      title: 'Do you Want to Close the Day?',
-      icon: <ExclamationCircleFilled />,
-      okText: 'Yes',
-      okType: 'danger',
-      cancelText: 'No',
-      onOk() {
-        if (!localStorage.getItem("dateSet")) {
-          toast.error("Day Already Closed")
-        } else {
-          setModalOpen(true)
-        }
-      },
-      onCancel() {
-        console.log('Cancel');
-      },
-    });
-  };
+  // const showDeleteConfirm = () => {
+  //   confirm({
+  //     title: 'Do you Want to Close the Day?',
+  //     icon: <ExclamationCircleFilled />,
+  //     okText: 'Yes',
+  //     okType: 'danger',
+  //     cancelText: 'No',
+  //     onOk() {
+  //       if (!localStorage.getItem("dateSet")) {
+  //         toast.error("Day Already Closed")
+  //       } else {
+  //         setModalOpen(true)
+  //       }
+  //     },
+  //     onCancel() {
+  //       console.log('Cancel');
+  //     },
+  //   });
+  // };
   const showLogOutConfirm = () => {
     confirm({
       title: 'Are you sure to Logout ?',
@@ -98,7 +102,7 @@ function Nav({ press, allRoles }) {
           </a>
         </div>
         <div className="nav">
-          <button className="posBtnNavbar" onClick={fn_closeDay}>Close Day</button>
+          <button className="posBtnNavbar" onClick={fn_closeDay}>Print summary</button>
           {(isAdmin || allRoles?.sale?.pos) && <button className="posBtnNavbar" onClick={() => navigate("/pos")}>POS</button>}
           <div className="bell" >{<BsFillBellFill onClick={() => setBellDisp(!bellDisp)} />}</div>
           {bellDisp && <p className="bell-Parra">

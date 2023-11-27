@@ -11,6 +11,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
     const [loader, setLoader] = useState(false)
     const [updatedPrice, setUpdatedPrice] = useState("")
     const [selectedProduct, setSelectedProduct] = useState([])
+    const [percentage, setPercentage] = useState(false)
     useEffect(() => {
         axios.get(`${URL}/group`).then((res) => {
             setAllGroup(res?.data?.data)
@@ -22,6 +23,14 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
             setFoundProduct([])
             return toast.error("Select Group")
         } else {
+            let pGroup=allGroup.find((item)=>{
+                return item._id == id
+            })
+            if (pGroup.grpType=="percent") {
+                setPercentage(true)
+            }else{
+                setPercentage(false)
+            }
             setLoader(true)
             axios.get(`${URL}/product/bygroup/${id}`).then((res) => {
                 if (res?.data?.status === 200) {
@@ -49,16 +58,21 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
         } else if (updatedPrice === "") {
             return toast.error("Enter Price")
         } else {
+            
             const params = {
                 ids: selectedProduct,
-                price: parseInt(updatedPrice)
+                price: parseInt(updatedPrice),
+                percentage: percentage
             }
+            
             axios.put(`${URL}/product/updateprices`, params).then((res) => {
                 console.log(res?.data)
                 if (res?.data?.status === 200) {
                     setUpdatedPrice("")
                     setSelectedProduct([])
                     setModalOpen(false)
+                    document.getElementById("selectGroup").value=""
+                    setFoundProduct([])
                     axios.get(`${URL}/group`).then((res) => {
                         setAllGroup(res?.data?.data)
                     })
@@ -87,7 +101,7 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
                 <div className="row">
                     <div className="d-flex flex-column px-3 mb-3">
                         <label className="productCreateTxt">Select Group*</label>
-                        <select className="productCreateInput" name="productBrand" required onChange={(e) => fn_selectGroup(e?.target?.value)}>
+                        <select id='selectGroup' className="productCreateInput" name="productBrand" required onChange={(e) => fn_selectGroup(e?.target?.value)}>
                             <option selected value={""}>---Choose Group---</option>
                             {allGroup && allGroup?.map((item) => (
                                 <option value={item?._id}>{item?.grpName}</option>
@@ -130,10 +144,14 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
                                     </tr>
                                 ))}
                             </table>
+                            {percentage?<div className="d-flex flex-column px-3 mb-3">
+                                <label className="productCreateTxt">Price to Update By Percent</label>
+                                <input className="productCreateInput" placeholder="Enter percentage to update price" value={updatedPrice} required onChange={(e) => setUpdatedPrice(e?.target?.value)} />
+                            </div>:
                             <div className="d-flex flex-column px-3 mb-3">
                                 <label className="productCreateTxt">Price to Update(PKR)*</label>
-                                <input className="productCreateInput" placeholder="Enter Price to Update" required onChange={(e) => setUpdatedPrice(e?.target?.value)} />
-                            </div>
+                                <input className="productCreateInput" placeholder="Enter Price to Update" value={updatedPrice} required onChange={(e) => setUpdatedPrice(e?.target?.value)} />
+                            </div>}
 
                             <Button type="primary" onClick={() => {
                                 let checkbox = document.getElementsByClassName("checkbox");
