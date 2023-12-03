@@ -71,14 +71,12 @@ function Nav({ press, allRoles }) {
     });
   };
   const onLogOut = () => {
-    if (!localStorage.getItem("dateSet")) {
+   
       localStorage.clear()
       navigate("/")
       // window.location.reload()
       return toast.success("Logout Successfully")
-    } else {
-      return toast.error("First close the Day")
-    }
+    
   }
   return (
     <>
