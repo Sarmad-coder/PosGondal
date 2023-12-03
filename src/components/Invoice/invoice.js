@@ -8,24 +8,24 @@ export default function Invoice() {
     const { invoiceData, setInvoiceData } = useContext(MyContext);
     console.log(invoiceData)
     useEffect(()=>{
-        window.print()
-        navigate("/salereport");
+        // window.print()
+        // navigate("/salereport");
 
     },[])
     return <div>
        {invoiceData? <div className="container">
             <div className="row">
                 <div className="span4">
-                    <img
+                    {/* <img
                         src="http://webivorous.com/wp-content/uploads/2020/06/brand-logo-webivorous.png"
                         className="img-rounded logo"
-                    />
+                    /> */}
                     <address>
                         <strong>Gondal Pvt. Ltd.</strong>
                         <br />
-                        35, Lajpat Nagar
+                        Near Suzuki Showroom, Lahore Road, Sargodha
                         <br />
-                        Gurugram, Haryana-122001 (India)
+                        03011541539, 048-3224233
                     </address>
                 </div>
                 <div className="span4 well">
@@ -63,10 +63,10 @@ export default function Invoice() {
                     <table className="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total Price</th>
+                                <th><b style={{color:"black"}}>Product</b></th>
+                                <th><b style={{color:"black"}}>Quantity</b></th>
+                                <th><b style={{color:"black"}}>Price</b></th>
+                                <th><b style={{color:"black"}}>Total Price</b></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,16 +121,16 @@ export default function Invoice() {
             </div>
             <div className="row">
                 <div className="span3">
-                    <strong>Phone:</strong>+91-124-111111
+                    <strong>Phone:</strong> 03011541539, 048-3224233
                 </div>
-                <div className="span3">
+                {/* <div className="span3">
                     <strong>Email:</strong>{" "}
                     <a href="web@webivorous.com">web@webivorous.com</a>
                 </div>
                 <div className="span3">
                     <strong>Website:</strong>{" "}
                     <a href="http://webivorous.com">http://webivorous.com</a>
-                </div>
+                </div> */}
             </div>
         </div>:null}
 

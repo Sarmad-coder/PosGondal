@@ -116,7 +116,7 @@ const CreateProduct = () => {
 
                         <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
                             <label className="productCreateTxt">Product Type</label>
-                            <select className="productCreateInput" name="productBrand" required onChange={(e) => {
+                            <select className="productCreateInput" name="" required onChange={(e) => {
                                 setProductType(e.target.value);
                             }}>
                                 <option selected value={""}>---Choose Type---</option>

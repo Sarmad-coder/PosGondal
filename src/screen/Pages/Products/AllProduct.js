@@ -55,35 +55,14 @@ const AllProducts = ({ allRoles }) => {
             )
         );
     }
-    const updateProduct = async (values) => {
-        const params = new FormData()
-        params.append('id', updatNewProduct)
-        params.append('productName', values.productName)
-        params.append('productCode', values.productCode)
-        params.append('group', values.group)
-        params.append('brand', values.brand)
-        params.append('tax', values.tax)
-        params.append('taxMethod', values.taxMethod)
-        params.append('imageUrl', document.getElementById("imageUrl")?.files[0])
-        params.append('details', values.details)
-        params.append('productType', values.productType)
-        params.append('productCost', values.productCost)
-        params.append('productPrice', values.productPrice)
-        params.append('unitProduct', values.unitProduct)
-        params.append('unitSale', values.unitSale)
-        params.append('unitPurchase', values.unitPurchase)
-        params.append('quantity', values.quantity)
-        params.append('stockAlert', values.stockAlert)
-        params.append('imeiNum', values.imeiNum)
-        axios.patch(`${URL}/product/${updatNewProduct}`, params).then((res) => {
-            console.log(res)
-            if (res?.data?.status === 200) {
-                toast.success("Product Update Successfully")
-            } else {
-                toast.error("Updating Err")
-            }
+
+    useEffect(()=>{
+        axios.get(`${URL}/product`).then((res) => {
+            setAllProduct(res.data.data)
+            setSearchSelectedProduct(res?.data?.data)
         })
-    }
+    },[modal])
+    
     const onDeleteStudent = (id) => {
         Modal.confirm({
             title: "Are you sure you want to Delete?",
@@ -216,124 +195,7 @@ const AllProducts = ({ allRoles }) => {
                             <h5 className="modal-title">Update</h5>
                             <button type="button" data-bs-dismiss="modal" aria-label="Close" className="btn-close"></button>
                         </div>
-                        <div className="modal-body">
-                            <form onSubmit={handleSubmit(updateProduct)}>
-                                {/* box-1 */}
-                                <div className="productMainBox">
-                                    <div className="row">
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Product Name*</label>
-                                            <input type="text" className="productCreateInput" placeholder="Product Name" name="productName"  {...register('productName')} />
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Product Code*</label>
-                                            <input type="text" className="productCreateInput" placeholder="Product Code" name="productCode"  {...register('productCode')} />
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Group*</label>
-                                            <select className="productCreateInput" name="productGroup"  {...register('group')}>
-                                                {allGroup?.map((item) => (
-                                                    <option value={item?._id}>{item?.grpName}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Brand</label>
-                                            <select className="productCreateInput" name="productBrand"  {...register('brand')}>
-                                                {allBrand?.map((item) => (
-                                                    <option value={item?._id}>{item?.brandName}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Order Tax</label>
-                                            <input type="number" className="productCreateInput" placeholder="Order Tax" name="orderTax"  {...register('tax')} />
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Tax Method</label>
-                                            <select className="productCreateInput" name="taxMethod" {...register('taxMethod')}>
-                                                <option selected value={"exclusive"}>Exclusive</option>
-                                                <option value={"inclusive"}>Inclusive</option>
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Product Image*</label>
-                                            <input type="file" className="productCreateInput" placeholder="Order Tax" defaultValue={singleStock?.imageUrl} id="imageUrl" style={{ paddingTop: "2.5px" }}
-                                            />
-                                        </div>
-                                        <div className="col-12 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Please Prove any Details*</label>
-                                            <textarea type="number" className="productCreateTextArea" name="productDetails" {...register('details')} />
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* box-2 */}
-                                <div className="productMainBox">
-                                    <div className="row">
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Product Category*</label>
-                                            <select className="productCreateInput" name="productType"  {...register('productType')}>
-                                                <option selected value={""}>---Select Product Category---</option>
-                                                {
-                                                    allCate.map((d, i) => {
-                                                        return <option key={i} value={d?.name}>{d?.name}</option>
-
-                                                    })
-                                                }
-                                                {/* <option value={"Variable Product"}>Variable Product</option>
-                                                <option value={"Service Product"}>Service Product</option> */}
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Product Cost*</label>
-                                            <input type="number" className="productCreateInput" placeholder="Product Cost" name="productCost"  {...register('productCost')} />
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Product Price*</label>
-                                            <input type="number" className="productCreateInput" placeholder="Product Price" name="productPrice"  {...register('productPrice')} />
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Unit Product*</label>
-                                            <select className="productCreateInput" name="unitProduct"  {...register('unitProduct')}>
-                                                <option selected value={""}>---Choose Product Unit---</option>
-                                                <option value={"kg"}>kilogram</option>
-                                                <option value={"meter"}>meter</option>
-                                                <option value={"piece"}>piece</option>
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Unit Sale*</label>
-                                            <select className="productCreateInput" name="unitSale"  {...register('unitSale')}>
-                                                <option selected value={""}>---Choose Sale Unit---</option>
-                                                <option value={"option1"}>Option 1</option>
-                                                <option value={"option2"}>Option 2</option>
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Unit Purchase*</label>
-                                            <select className="productCreateInput" name="unitPurchase"  {...register('unitPurchase')}>
-                                                <option selected value={""}>---Choose Purchase Unit---</option>
-                                                <option value={"option1"}>Option 1</option>
-                                                <option value={"option2"}>Option 2</option>
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Minimum Sale Quantity</label>
-                                            <input type="number" className="productCreateInput" defaultValue={0} name="minSaleQty"  {...register('quantity')} />
-                                        </div>
-                                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
-                                            <label className="productCreateTxt">Stock Alert</label>
-                                            <input type="number" className="productCreateInput" defaultValue={0} name="stockAlert"  {...register('stockAlert')} />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="productMainBox ps-5">
-                                    <input type="checkbox" name="imeiNum" />
-                                    <label className="ms-3 productCreateTxt">Product has Imei/Serial Number</label>
-                                </div>
-                                <button type="submit" className="productSubmitBtn"><AiOutlineCheckCircle className="submitProductIcon" />Submit</button>
-                            </form>
-                        </div>
+                        
                     </div>
                 </div>
             </div>

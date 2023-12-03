@@ -1,9 +1,9 @@
-import { Button, Modal } from 'antd';
+import { Button, Modal, Form } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import URL from '../../Url';
-
+import { useForm } from 'react-hook-form';
 const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelectedProduct }) => {
   const [group, setGroup] = useState([]);
   const [brand, setBrand] = useState([]);
@@ -11,11 +11,11 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
   const [unit, setUnit] = useState([]);
   const [img, setImg] = useState(null);
 
-
+  const { handleSubmit, reset, register } = useForm()
 
   const [data, setData] = useState({
     image: "",
-    name: "", group: "", brand: "", productCost: "", price: "", stock: ""
+    name: "", group: "", brand: "", productCost: "", price: "", stock: "", unit: ""
   })
 
   useEffect(() => {
@@ -36,17 +36,7 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
       setUnit(res?.data?.data)
 
     })
-
-    setData({
-      ...data,
-      image: up?.imageUrl,
-      name: up?.productName,
-      group: up?.group,
-      brand: up?.brand,
-      productCost: up?.productCost,
-      price: up?.productPrice,
-      stock: up?.quantity
-    });
+    reset(up)
   }, [up]);
 
 
@@ -73,23 +63,25 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
     }));
   }
 
-  const updateData = (id) => {
+  const updateData = (value) => {
     const body = new FormData();
-    body.append("imageUrl", img);
-    body.append("productName", data.name);
-    body.append("group", data.group);
-    body.append("brand", data.brand);
-    body.append("productCost", data.productCost);
-    body.append("price", data.price);
-    body.append("unitProduct", data.unit);
+    if (img) {
 
-    body.append("stock", data.stock);
-    axios.patch(`${URL}/product/${id}`, body).then((res) => {
+      body.append("imageUrl", img);
+    }
+    body.append("productName", value.productName);
+    body.append("group", value.group);
+    body.append("brand", value.brand);
+    body.append("productCost", value.productCost);
+    body.append("productPrice", value.productPrice);
+    body.append("unitProduct", value.unitProduct);
+
+    body.append("stockAlert", value.stockAlert);
+    axios.patch(`${URL}/product/${up?._id}`, body).then((res) => {
       if (res?.status === 200) {
         toast.success("Updated")
         setModal(false)
-        setAllProduct(res?.data?.data)
-        searchSelectedProduct(res?.data?.data)
+        
       }
       else {
         toast.error("Failed to update")
@@ -103,6 +95,7 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
 
   return (
     <div>
+
       <Modal
         title="Update Product"
         style={{
@@ -114,18 +107,18 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
         onCancel={() => setModal(false)}
         footer={[
           <Button key={"cancel"} onClick={() => { setModal(false) }} >Cancel</Button>,
-          <Button key={"ok"} onClick={() => updateData(up?._id)}>Update</Button>
+          <Button key={"ok"}  >Update</Button>
         ]}
       >
-
+        <form onSubmit={handleSubmit(updateData)}>
         <div className="row">
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
             <label className="productCreateTxt" htmlFor="img">Image</label>
-            <input type="file" className='productCreateInput' onChange={(e) => { setImg(e.target?.files[0]) }} required accept="image/" name='img' placeholder='Pick Image' />
+            <input type="file" className='productCreateInput' onChange={(e) => { setImg(e.target?.files[0]) }} accept="image/" name='img' placeholder='Pick Image' />
           </div>
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
             <label className="productCreateTxt" htmlFor="name">Name</label>
-            <input className='productCreateInput' onChange={(e) => { datachange(e) }} required defaultValue={data?.name} type='text' name='name' />
+            <input className='productCreateInput' name="productName" required {...register('productName')} type='text' />
           </div>
 
 
@@ -133,7 +126,7 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
             <label className="productCreateTxt" htmlFor="group">Group</label>
             {/* <input className='productCreateInput'   onChange={(e)=>{datachange(e)}}  required  defaultValue={data?.group}  type='text' name='group' /> */}
-            <select className="productCreateInput" id="group" name='group' defaultValue={data?.group} onChange={(e) => { datachange(e) }} required>
+            <select className="productCreateInput" id="group" name='productGroup' {...register('group')} required>
               <option defaultValue={""} >---Choose Group---</option>
               {group && group?.map((item) => (
                 <option key={item?._id} value={item?._id} selected={data?.group === item?._id ? true : false}>{item?.grpName}</option>
@@ -143,25 +136,25 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
           </div>
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
             <label className="productCreateTxt" htmlFor="brand">Brand</label>
-            {/* <input className='productCreateInput' onChange={(e) => { datachange(e) }}  defaultValue={data?.brand} type='text' name='brand' /> */}
-            <select className="productCreateInput" id="brand" name='brand' defaultValue={data?.brand} onChange={(e) => { datachange(e) }} required>
+            {/* <input className='productCreateInput'  defaultValue={data?.brand} type='text' name='brand' /> */}
+            <select className="productCreateInput" id="brand" name='productBrand' {...register('brand')} required>
               <option defaultValue={""} >---Choose Group---</option>
               {brand && brand?.map((item) => (
-                <option key={item?._id} defaultValue={item?._id} selected={data?.brand === item?._id ? true : false}>{item?.brandName}</option>
+                <option key={item?._id} value={item?._id} selected={data?.brand === item?._id ? true : false}>{item?.brandName}</option>
               ))}
             </select>
           </div>
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
             <label className="productCreateTxt" htmlFor="productCost">Product Cost</label>
-            <input type='text' className='productCreateInput' onChange={(e) => { datachange(e) }} required defaultValue={data?.productCost} name='productCost' />
+            <input type='text' className='productCreateInput' required {...register('productCost')} name='productCost' />
           </div>
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
             <label className="productCreateTxt" htmlFor="price">Price</label>
-            <input type='text' className='productCreateInput' onChange={(e) => { datachange(e) }} required defaultValue={data?.price} name='price' />
+            <input type='text' className='productCreateInput' required {...register('productPrice')} name='price' />
           </div>
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
-            <label className="productCreateTxt" htmlFor="stock">Stock</label>
-            <input type='text' className='productCreateInput' onChange={(e) => { datachange(e) }} required defaultValue={data?.stock} name='stock' />
+            <label className="productCreateTxt" htmlFor="stock">Stock Alert</label>
+            <input type='text' className='productCreateInput' required {...register('stockAlert')} name='stock' />
           </div>
 
 
@@ -171,18 +164,22 @@ const UpdateProduct = ({ up, setUp, modal, setModal, setAllProduct, searchSelect
           <div className="col-md-6 d-flex flex-column px-2 mb-3">
             <label className="productCreateTxt" htmlFor="unit">Product Unit</label>
 
-            <select className="productCreateInput" id="unit" name='unit' defaultValue={data?.unit} onChange={(e) => { datachange(e) }} required>
+            <select className="productCreateInput" id="unit" name='unit' {...register('unitProduct')} required>
               <option defaultValue={""} >---Choose Product Unit---</option>
               {unit && unit?.map((item) => (
-                <option key={item?._id} defaultValue={item?._id} selected={data?.unit === item?._id ? true : false}>{item?.shortName}</option>
+                <option key={item?._id} defaultValue={item?.shortName} selected={data?.unit === item?.shortName ? true : false}>{item?.shortName}</option>
               ))}
             </select>
           </div>
         </div>
+        <div className='justify-content-end' style={{display:"flex"}}>
+        <button type='submit' className='updateBtn'>Update</button>
+        </div>
+      </form>
 
-      </Modal>
 
-    </div>
+    </Modal>
+    </div >
   );
 }
 

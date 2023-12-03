@@ -56,3 +56,17 @@
     outline: none !important;
     box-shadow: none !important;
 }
+.updateBtn{
+    background-color: transparent;
+    width: 79px;
+    height: 32px;
+    border: 1px solid #d6d3d3;
+    border-radius: 7px;
+    position: absolute;
+    z-index: 10;
+    margin-top: 12px;
+}
+.updateBtn:hover{
+    color: #4096ff;
+    border-color: #4096ff;
+}

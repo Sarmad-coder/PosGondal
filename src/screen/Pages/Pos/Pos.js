@@ -17,6 +17,7 @@ const Pos = () => {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [allProduct, setAllProduct] = useState([]);
+  const [filter, setFilter] = useState([])
   const [filterPro, setFilterPro] = useState(null);
   const [filterByGroup, setFilterByGroup] = useState(null);
   const [allCustomer, setAllCustomer] = useState([]);
@@ -78,6 +79,7 @@ const Pos = () => {
       .get(`${URL}/product`)
       .then((res) => {
         setAllProduct(res?.data?.data);
+        setFilter(res?.data?.data)
         console.log(res?.data?.data, "ooooooooooooooooooooooooooo");
       });
   }, [selectedWarehouse]);
@@ -362,6 +364,15 @@ const Pos = () => {
           <Input
             addonBefore={<SearchOutlined />}
             placeholder="Search Product by Code or Name"
+            onChange={(e)=>{
+              // console.log(e.target.value);
+
+             const result= (filterByGroup ?? filterPro ?? allProduct)?.filter((item) =>{
+                 return item.productName.toLowerCase().includes(e.target.value.toLowerCase())
+              })
+
+              setFilter(result)
+            }}
           />
         </Space.Compact>
       </div>
@@ -602,7 +613,7 @@ const Pos = () => {
         <div className="col-md-5 row">
           {(filterByGroup ?? filterPro ?? allProduct) &&
             (selectedWarehouse
-              ? (filterByGroup ?? filterPro ?? allProduct)?.filter(item => item.warehouse.includes(selectedWarehouse))
+              ? (filterByGroup ?? filterPro ??filter)?.filter(item => item.warehouse.includes(selectedWarehouse))
               : []
             )
               .map((item) => (
