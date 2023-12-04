@@ -300,7 +300,7 @@ input[type="radio"] {
   width: 250px !important;
   top: 0;
   bottom: 0;
-  overflow: scroll;
+  
   transition: 0.5s !important;
 }
 

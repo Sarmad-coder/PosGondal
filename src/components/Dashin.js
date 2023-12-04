@@ -52,7 +52,7 @@ function Dashin({ children, allRoles, setAllRoles }) {
           </div>
 
           <div className="" id="common_bar" style={{ marginLeft: togg ? '0px' : '250px' }} >
-            <Nav press={changeTogg} allRoles={allRoles} />
+            <Nav press={changeTogg} left={togg ? '-100%' : '0'} allRoles={allRoles} />
             <Outlet />
           </div>
         </div>
