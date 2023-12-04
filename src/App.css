@@ -300,9 +300,10 @@ input[type="radio"] {
   width: 250px !important;
   top: 0;
   bottom: 0;
-  
+  overflow-x: auto;
   transition: 0.5s !important;
 }
+
 
 .sidebar ul li {
   list-style: none;
@@ -404,20 +405,21 @@ ul {
 }
 
 .sidebar::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 .sidebar::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
+  background-color: rgba(52, 120, 245, 0);
+  width: 0px;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background-color: #e2dada;
+  background-color: #6867675f;
   border-radius: 5px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background-color: #ccc7c7;
+  background-color: #444444;
 }
 
 * {
