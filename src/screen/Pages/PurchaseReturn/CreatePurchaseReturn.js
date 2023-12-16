@@ -129,11 +129,26 @@ const CreatePurchaseReturn = () => {
                                         <td className="productCreateTxt">
                                             <button
                                                 // disabled={productArr?.find(k => k?.product?._id === item?._id)?.returnQty > 0 ? false : true}
-                                                disabled={item?.returnQty === 1 ? true : false}
+                                                disabled={item?.returnQty <= 1 ? true : false}
                                                 className="btn btn-sm btn-info me-1" style={{ lineHeight: "1rem" }} onClick={() => handleDecrement(item)}>-</button>
-                                            <span>{item?.returnQty}</span>
+                                            <input type="text" style={{width:"30px"}} value={item?.returnQty} onChange={(e)=>{
+                                               
+                                                const Order = [...allPurchase]
+                                                const pro = [...productArr]
+                                                const findPro = (pro?.find(i => i?.product?._id === item?._id))
+                                                if (+e.target.value> item?.quantity) {
+                                                    return toast.error("Purchase Retuen quantity cannot be greater than Product quantity")
+                                                }
+                                                const findItem = (Order?.find(i => i?._id === item?._id))
+                                                item.returnQty = +e.target.value
+                                                const index = Order?.findIndex(i => i?._id === item?._id)
+                                                const indexPro = pro?.findIndex(i => i?.product?._id === item?._id)
+                                                Order[index] = findItem
+                                                pro[indexPro] = findPro
+                                                setAllPurchase(Order)
+                                            }}/>
                                             <button
-                                                disabled={item?.returnQty === item?.quantity ? true : false}
+                                                disabled={item?.returnQty >= item?.quantity ? true : false}
                                                 className="btn btn-sm btn-info ms-1" style={{ lineHeight: "1rem" }} onClick={() => handleIncrement(item)}>+</button>
                                         </td>
                                     </td>

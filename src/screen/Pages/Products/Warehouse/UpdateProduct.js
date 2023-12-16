@@ -5,11 +5,13 @@ import { toast } from 'react-toastify';
 import { MagnifyingGlass } from 'react-loader-spinner';
 import { imgURL } from '../../../Url';
 
-const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
+const UpdateProduct = ({ modalOpen, setModalOpen, URL,setCost,cost }) => {
     const [allGroup, setAllGroup] = useState([])
     const [foundProduct, setFoundProduct] = useState([])
     const [loader, setLoader] = useState(false)
-    const [updatedPrice, setUpdatedPrice] = useState("")
+    const [updatedCost, setUpdatedCost] = useState(0)
+    const [updatedPrice, setUpdatedPrice] = useState(0)
+    const [updatedBase, setUpdatedBase] = useState(0)
     const [selectedProduct, setSelectedProduct] = useState([])
     const [percentage, setPercentage] = useState(false)
     useEffect(() => {
@@ -62,17 +64,22 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
             const params = {
                 ids: selectedProduct,
                 price: parseInt(updatedPrice),
+                cost:updatedCost,
+                base:updatedBase,
                 percentage: percentage
             }
             
             axios.put(`${URL}/product/updateprices`, params).then((res) => {
                 console.log(res?.data)
                 if (res?.data?.status === 200) {
-                    setUpdatedPrice("")
+                    setUpdatedPrice(0)
+                    setUpdatedBase(0)
+                    setUpdatedCost(0)
                     setSelectedProduct([])
                     setModalOpen(false)
                     document.getElementById("selectGroup").value=""
                     setFoundProduct([])
+                    setCost(false)
                     axios.get(`${URL}/group`).then((res) => {
                         setAllGroup(res?.data?.data)
                     })
@@ -93,7 +100,15 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
                 onCancel={() => { setModalOpen(false) }}
                 width={700}
                 footer={[
-                    <Button key="primary" onClick={() => setModalOpen(false)}>Cancel</Button>,
+                    <Button key="primary" onClick={() => {
+                        setModalOpen(false)
+                        setFoundProduct([])
+                        document.getElementById("selectGroup").value=""
+                        setUpdatedPrice(0)
+                        setUpdatedBase(0)
+                        setUpdatedCost(0)
+                        setCost(false)
+                    }}>Cancel</Button>,
                     <Button key="ok" type="primary" onClick={fn_update}>Update Products</Button>
                 ]}
             >
@@ -128,7 +143,9 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
                                     <th>Image</th>
                                     <th>Name</th>
                                     <th>Avaiable Qty</th>
-                                    <th>Price (PKR)</th>
+                                    <th>Cost (PKR)</th>
+                                    {!cost&&<th>Price (PKR)</th>}
+                                    {cost&&percentage&&<th>Base Price (PKR)</th>}
                                 </tr>
                                 {foundProduct?.map((item) => (
                                     <tr style={{ borderBottom: "1px solid #B2C4FF" }}>
@@ -140,17 +157,31 @@ const UpdateProduct = ({ modalOpen, setModalOpen, URL }) => {
                                         </td>
                                         <td>{item?.productName}</td>
                                         <td>{item?.quantity}</td>
-                                        <td>PKR{item?.productPrice}</td>
+                                        {cost&&percentage&&<td>PKR{item?.basePrice}</td>}
+                                        <td>PKR{item?.productCost}</td>
+                                        {!cost&&<td>PKR{item?.productPrice}</td>}
                                     </tr>
                                 ))}
                             </table>
-                            {percentage?<div className="d-flex flex-column px-3 mb-3">
+                            {percentage&&cost&&<div className="d-flex flex-column px-3 mb-3">
+                                <label className="productCreateTxt">Base Price to Update</label>
+                                <input type='number' className="productCreateInput" placeholder="Enter percentage to update price" value={updatedBase} required onChange={(e) => setUpdatedBase(e?.target?.value)} />
+                            </div>}
+                            {percentage&&cost&&<div className="d-flex flex-column px-3 mb-3">
+                                <label className="productCreateTxt">Cost Price to Update By Percent</label>
+                                <input type='number' className="productCreateInput" placeholder="Enter percentage to update price" value={updatedCost} required onChange={(e) => setUpdatedCost(e?.target?.value)} />
+                            </div>}
+                            {!percentage&&cost&&<div className="d-flex flex-column px-3 mb-3">
+                                <label className="productCreateTxt">Cost Price to Update</label>
+                                <input type='number' className="productCreateInput" placeholder="Enter percentage to update price" value={updatedCost} required onChange={(e) => setUpdatedCost(e?.target?.value)} />
+                            </div>}
+                            {!cost&&percentage?<div className="d-flex flex-column px-3 mb-3">
                                 <label className="productCreateTxt">Price to Update By Percent</label>
-                                <input className="productCreateInput" placeholder="Enter percentage to update price" value={updatedPrice} required onChange={(e) => setUpdatedPrice(e?.target?.value)} />
+                                <input type='number' className="productCreateInput" placeholder="Enter percentage to update price" value={updatedPrice} required onChange={(e) => setUpdatedPrice(e?.target?.value)} />
                             </div>:
-                            <div className="d-flex flex-column px-3 mb-3">
+                           !cost&& <div className="d-flex flex-column px-3 mb-3">
                                 <label className="productCreateTxt">Price to Update(PKR)*</label>
-                                <input className="productCreateInput" placeholder="Enter Price to Update" value={updatedPrice} required onChange={(e) => setUpdatedPrice(e?.target?.value)} />
+                                <input type='number' className="productCreateInput" placeholder="Enter Price to Update" value={updatedPrice} required onChange={(e) => setUpdatedPrice(e?.target?.value)} />
                             </div>}
 
                             <Button type="primary" onClick={() => {

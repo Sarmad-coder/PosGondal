@@ -7,10 +7,12 @@ import URL from '../../Url';
 import { useState } from 'react';
 import { BsFillPencilFill } from "react-icons/bs";
 import DateComp from '../../../components/Date';
-
+import { Input, Space } from 'antd'
+import { SearchOutlined } from '@ant-design/icons';
 const PurchaseReturn = ({ allRoles }) => {
     const navigate = useNavigate()
     const [allPurchaseReturn, setAllPurchaseReturn] = useState([])
+    const [filterData, setFilterData] = useState([])
     const [allSupplier, setAllSupplier] = useState([])
     const [allWarehouse, setAllWarehouse] = useState([])
     const [dateFilterRes, setDateFilterRes] = useState(null)
@@ -18,6 +20,7 @@ const PurchaseReturn = ({ allRoles }) => {
     useEffect(() => {
         axios.get(`${URL}/purchasereturn`).then((res) => {
             setAllPurchaseReturn(res?.data?.data)
+            setFilterData(res?.data?.data)
         })
         axios.get(`${URL}/supplier`).then((res) => {
             setAllSupplier(res?.data?.data)
@@ -26,6 +29,15 @@ const PurchaseReturn = ({ allRoles }) => {
             setAllWarehouse(res?.data?.data)
         })
     }, [])
+console.log(allPurchaseReturn);
+    const fn_searchProduct = (e) => {
+        const searchTerm = e?.target?.value;
+        setFilterData(
+            allPurchaseReturn?.filter((product) =>
+                product?.product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        );
+    }
     return (
         <div className="content-section p-3 pt-0">
             <p className='dashboadHeading' >Purchase Return</p >
@@ -40,12 +52,14 @@ const PurchaseReturn = ({ allRoles }) => {
                                 </button>
                             </div>}
                             <section style={{ display: "flex", justifyContent: "space-between" }}>
-                                <div className='d-flex '>
-                                    {/* <label>
-
-                                    </label> */}
-
-                                </div>
+                                <section style={{ display: "flex", justifyContent: "space-between",width:"50%" }}>
+                                   
+                                    <div style={{width:"100%"}}>
+                                        <Space.Compact size="large" style={{ backgroundColor: "rgba(40, 129, 201, 0.055)",width:"100%" }}>
+                                            <Input addonBefore={<SearchOutlined />} placeholder="Search By Product" width={"100%"} onChange={(e) => fn_searchProduct(e)} />
+                                        </Space.Compact>
+                                    </div>
+                                </section>
                                 <div>
                                     <DateComp
                                         from="PR From"
@@ -76,7 +90,7 @@ const PurchaseReturn = ({ allRoles }) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {(dateFilterRes ?? allPurchaseReturn)?.map((item) => (
+                                        {(dateFilterRes ??filterData)?.map((item) => (
                                             <tr>
                                                 <td>{item?.setDate}</td>
                                                 <td>{allSupplier?.find(sup => sup?._id === item?.supplierId)?.name}</td>

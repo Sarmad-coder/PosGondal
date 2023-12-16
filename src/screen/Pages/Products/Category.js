@@ -19,6 +19,7 @@ const Category = () => {
     const [updateProductModal, setUpdateProductModal] = useState(false);
     const [groupDetail, setGroupDetail] = useState({});
     const [query, setQuery] = useState("");
+    const [cost,setCost]=useState(false);
 
     let [data, setDate] = useState([]);
 
@@ -30,7 +31,7 @@ const Category = () => {
         axios.get(`${URL}/group`)
             .then((res) => {
                 if (res.data.data) {
-                    
+
                     setDate(res?.data?.data?.reverse())
                 }
             })
@@ -67,7 +68,7 @@ const Category = () => {
         <div className="content-section p-3 pt-0">
             <CreateCategory key="model1" modalOpen={modal1Open} setModalOpen={setModal1Open} setDate={setDate} data={data} URL={URL} />
             <UpdateCategory key="model2" modalUpdate={modalUpdate} setModalUpdate={setModalUpdate} setDate={setDate} groupDetail={groupDetail} setGroupDetail={setGroupDetail} />
-            <UpdateProduct key="model3" modalOpen={updateProductModal} setModalOpen={setUpdateProductModal} URL={URL} toast={toast} />
+            <UpdateProduct key="model3" modalOpen={updateProductModal} setModalOpen={setUpdateProductModal} URL={URL} toast={toast} setCost={setCost} cost={cost}/>
             <p className='dashboadHeading' >Groups</p>
             <hr className='dashboardLine' />
             <div id="section_Warehouse_list" className="row">
@@ -75,7 +76,7 @@ const Category = () => {
                     <div className="card">
                         <div className="card-body">
                             <div className="text-end mb-3">
-                               
+
                                 <button className="new_Warehouse btn btn-outline-primary btn-md m-1" onClick={() => setModal1Open(true)}>
                                     Create
                                 </button>
@@ -97,10 +98,15 @@ const Category = () => {
                                 </div>
                             </section>
                             <button className="new_Warehouse btn btn-outline-primary btn-md m-1" onClick={() => setUpdateProductModal(true)}>
-                                    Update Group Price
-                                </button>
+                                Update Group Price
+                            </button>
+                            <button className="new_Warehouse btn btn-outline-primary btn-md m-1" onClick={() => {
+                                setCost(true)
+                                setUpdateProductModal(true)
+                                }}>
+                                Update Group Cost
+                            </button>
 
-                            
 
                             <div className="table-responsive">
                                 <table

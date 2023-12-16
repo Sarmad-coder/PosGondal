@@ -57,6 +57,7 @@ const CreateProduct = () => {
         params.append('category', document.getElementsByName("category")?.[0]?.value)
         // params.append('details', document.getElementsByName("productDetails")?.[0].value)
         params.append('productCost', document.getElementsByName("productCost")?.[0].value)
+        params.append('basePrice', document.getElementsByName("basePrice")?.[0].value)
         if (productType == "percent") {
             let value = +document.getElementsByName("productPriceByPercent")?.[0].value
             let cost = +document.getElementsByName("productCost")?.[0].value
@@ -179,10 +180,33 @@ const CreateProduct = () => {
                                                 <option value={"Service Product"}>Service Product</option> */}
                             </select>
                         </div>
-                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
+                        {productType == "percent"&& <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
+                            <label className="productCreateTxt">Base Price*</label>
+                            <input type="number" className="productCreateInput" placeholder="Product Cost" name="basePrice" required />
+                        </div>}
+                       {productType == "price"? <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
                             <label className="productCreateTxt">Product Cost*</label>
                             <input type="number" className="productCreateInput" placeholder="Product Cost" name="productCost" required />
-                        </div>
+                        </div>:
+                        <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
+                        <label className="productCreateTxt">Product Cost By Percent</label>
+                        <input type="number" className="productCreateInput" placeholder="Product Cost By %" name="productCostByPercent" required onChange={()=>{
+                            if (+document.getElementsByName("basePrice")?.[0].value) {
+                                let value = +document.getElementsByName("basePrice")?.[0].value
+                                let cost = +document.getElementsByName("productCostByPercent")?.[0].value
+                                let totalPrice = (cost / 100) * value
+                                totalPrice = +totalPrice + +value
+                               document.getElementById("productCost").value = totalPrice
+                            }else{
+                                toast.error("First Enter Base Price")
+                            }
+                                    
+                                }}/>
+                    </div>}
+                    {productType == "percent"&& <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
+                                <label className="productCreateTxt">Product Cost*</label>
+                                <input id="productCost" disabled type="number" className="productCreateInput" placeholder="Product Price" name="productCost" required />
+                            </div>}
                         {productType == "price" ? <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
                             <label className="productCreateTxt">Product Price*</label>
                             <input type="number" className="productCreateInput" placeholder="Product Price" name="productPrice" required />
@@ -191,11 +215,16 @@ const CreateProduct = () => {
                             <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
                                 <label className="productCreateTxt">Product Price by percent*</label>
                                 <input type="number" className="productCreateInput" placeholder="Product Price By %" name="productPriceByPercent" required onChange={()=>{
-                                     let value = +document.getElementsByName("productPriceByPercent")?.[0].value
-                                     let cost = +document.getElementsByName("productCost")?.[0].value
-                                     let totalPrice = (cost / 100) * value
-                                     totalPrice = +totalPrice + +cost
-                                    document.getElementById("showPrice").value = totalPrice
+                                     if (+document.getElementsByName("productCost")?.[0].value) {
+                                        let value = +document.getElementsByName("productPriceByPercent")?.[0].value
+                                        let cost = +document.getElementsByName("productCost")?.[0].value
+                                        let totalPrice = (cost / 100) * value
+                                        totalPrice = +totalPrice + +cost
+                                       document.getElementById("showPrice").value = totalPrice
+                                     }else{
+                                        toast.error("Please First Enter Cost Price")
+                                     }
+                                    
                                 }}/>
                             </div>}
                            {productType == "percent"&& <div className="col-md-4 col-sm-6 d-flex flex-column px-3 mb-3">
